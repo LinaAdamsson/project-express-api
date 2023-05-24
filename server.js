@@ -1,6 +1,6 @@
-import express from "express";
-// import cors from "cors";
-import booksData from "./data/books.json";
+import express, { response } from 'express';
+import cors from 'cors';
+import booksData from './data/books.json';
 // import technigoMembers from "./data/technigo-members.json";
 
 // If you're using one of our datasets, uncomment the appropriate import below
@@ -15,66 +15,152 @@ import booksData from "./data/books.json";
 // PORT=9000 npm start
 const port = process.env.PORT || 8080;
 const app = express();
-
+// const listEndpoints = require('express-list-endpoints')
 // Add middlewares to enable cors and json body parsing
-// app.use(cors());
+app.use(cors());
 app.use(express.json());
 
 // Start defining your routes here. Adding path parameters.
+// app.get("/", (req, res) => {
+//   res.send("Hello Technigo!");
+//   // res.json(listEndpoints(app))
+// });
+
+// DRY 
 app.get("/books", (request, response) => {
-  const { title } = request.query;
-  let books = booksData;
-
-  if (title) {
-    books = booksData.filter((singleBook) => {
-      return singleBook.title.toLowerCase() === title.LowerCase();
-    });
-  }
-
+    // res.json(booksData)
+  const books = booksData;
   if (books) {
     response.status(200).json({
       success: true,
-      message: "OK",
+      message: "ok",
       body: {
         booksData: books
       }
     });
-  } else {
+   } else {
     response.status(500).json({
-    success: false,
+      success: false,
       message: "Something went wrong",
       body: {}
     });
   }
-});
+})
 
-// DRY 
 app.get("/books/:id", (request, response) => { // Always treated as a string.
-    // return book._title === request.params.id
+// app.get('/books/title/:title', (request, response) => { // Always treated as a string.  nu object
+  // endpointen hämtar info från data. 
+// return book._title === request.params.id
     const { id } = request.params;
-    console.log("id: ", title)
     const singleBook = booksData.find((book) => {
+      return book.bookID === Number(id); // making id from parameter a number.
+    });
+    // const { title } = request.query;
+    // let books = booksData;
+
+    if (singleBook) {
+      response.status(200).json({
+            success: true,
+            message: "OK",
+            body: {
+              book: singleBook
+            }
+          });
+        } else {
+          response.status(404).json({
+            success: false,
+            message: "Book not found",
+            body: {}
+          });
+        }
+      });
+
+      
+
+      // app.get("/books/:id", (request, response) => {
+      app.get("/books/authors/:authors", (request, response) => {
+        // const { id } = request.params;
+        const { author } = request.params;
+        // const singleBook = booksData.find((book) => {
+        const authorName = booksData.find((book) => {
+        //   return book.bookID === Number(id);
+        // });
+          return book.authors === Number(author);
+        });
+        // if (singleBook) {
+        if (authorName) {
+          // response.status(200).json({
+          //   success: true,
+          //   message: "OK",
+          //   body: {
+          //     book: singleBook
+          //   }
+          // });
+          response.status(200).json({
+            success: true,
+            message: "OK",
+            body: {
+              book: authorName
+            }
+          });
+        } else {
+      //     response.status(404).json({
+      //       success: false,
+      //       message: "Book not found",
+      //       body: {}
+      //     });
+      //   }
+      // });
+          response.status(404).json({
+            success: false,
+            message: "Author not found",
+            body: {}
+          });
+        }
+      });
+
+  //   books = booksData.filter((singleBook) => {
+  //     return singleBook.title.toLowerCase() === title.LowerCase();
+  //   });
+  // }
+
+  // if (books) {
+  //   response.status(200).json({
+  //     success: true,
+  //     message: "OK",
+  //     body: {
+  //       booksData: books
+  //     }
+  //   });
+  // } else {
+  //   response.status(500).json({
+  //   success: false,
+  //     message: "Something went wrong",
+  //     body: {}
+  //   });
+  // }
+    // console.log("id: ", title)
+    // const singleBook = booksData.find((book) => {
     // return book._title == id; // weak comp. not checking type.
-    return book._title === Number(id); // making id from parameter a number.
     // return book._title.toString() === id;
     // return book._id === +id;
-  });
-  if (singleBook) {
-    response.status(200).json({
-      success: true,
-      message: "OK",
-      body: {
-        booksData: singleBook
-      }
-    });
-  } else {
-    response.status(404).json({
-    success: false,
-      message: "Book not found",
-      body: {}
-    });
-  }
-});
+//   });
+//   if (singleBook) {
+//     response.status(200).json({
+//       success: true,
+//       message: "OK",
+//       body: {
+//         booksData: singleBook
+//       }
+//     })
+//   } else {
+//     response.status(404).json({
+//     success: false,
+//       message: "Book not found",
+//       body: {}
+//     });
+//   }
+// });
 
 // get all technigo members
 // app.get("/members", (req, res) => {
