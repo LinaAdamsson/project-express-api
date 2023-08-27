@@ -14,11 +14,17 @@ import booksData from './data/books.json';
 // when starting the server. Example command to overwrite PORT env variable value:
 // PORT=9000 npm start
 const port = process.env.PORT || 8080;
+// const port = process.env.PORT || 9090;
 const app = express();
 // const listEndpoints = require('express-list-endpoints')
 // Add middlewares to enable cors and json body parsing
 app.use(cors());
 app.use(express.json());
+
+// Middleware to handle 404 errors
+const notFound = (req, res, next) => {
+  res.status(404).send("Not found");
+};
 
 // Start defining your routes here. Adding path parameters.
 // app.get("/", (req, res) => {
@@ -28,7 +34,11 @@ app.use(express.json());
 
 // DRY 
 app.get("/books", (request, response) => {
-    // res.json(booksData)
+    res.json(booksData);
+});
+// app.get("/", (req, res) => {
+//   res.send("Find a new world!");
+// });
   const books = booksData;
   if (books) {
     response.status(200).json({
@@ -45,7 +55,6 @@ app.get("/books", (request, response) => {
       body: {}
     });
   }
-})
 
 app.get("/books/:id", (request, response) => { // Always treated as a string.
 // app.get('/books/title/:title', (request, response) => { // Always treated as a string.  nu object
